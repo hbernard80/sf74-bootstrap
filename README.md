@@ -23,14 +23,14 @@ Installation de Symfony prêt à cloner pour le démarrage d'un projet, histoire
   * Intégration + librairie Icons via AssetMapper.
   * Application du thème de formulaire _bootstrap\_5\_horizontal\_layout_ (fichier _config/packages/twig.yaml_)
   * Passage du template _templates/base.html.twig_ à Bootstrap avec un menu responsive.
-* Intégration de la police Google Fonts _Roboto_ (méthode : fichier _.woff_ dans le répertoire _assets/fonts/_).
+* Intégration de la police Google Fonts _Roboto_ (méthode : fichier _.woff2_ dans le répertoire _assets/fonts/_).
 * Structuration sémantique et découpage propre des templates : header, menu (nav), main et footer.
 * Ajout de paramètres pour le nom du site et les adresses mail.
 * Désactivation de l'envoi de mail asynchrone (pour l'environnement de dev)
 * Création d'un fichier _.env.local_ pour création d'une base de données en environnement de développement.
-* Création d'un répertoire _var/share/_ pour les fichiers (datas, documents, photos/avatars utilisateurs etc.). Le paramètre _APP_SHARE_DIR_ est créé par l'installation Symfony dans les fichiers _.env_.
+* Création d'un répertoire _var/share/_ pour les fichiers (datas, documents etc.). Le paramètre `APP_SHARE_DIR` est créé par l'installation Symfony dans les fichiers _.env_.
 * Contrôleur _HomeController_ (temporaire, à écraser par les contrôleurs réels du projet à réaliser), avec son template _templates/home/index.html.twig_ et son fichier de test unitaire _tests/Controller/HomeControllerTest.php_.
-* Trait pour la gestion des dates dans les entités (propriétés `created_at` et `updated_at`) :_src/Trait/TimestampableTrait.php_.
+* Trait pour la gestion des dates dans les entités (propriétés `created_at` et `updated_at`) : _src/Trait/TimestampableTrait.php_.
 
 ## Ne contient pas
 

@@ -1,6 +1,6 @@
 twig:
     file_name_pattern: '*.twig'
-    form_themes: ['bootstrap_5_layout.html.twig']
+    form_themes: ['bootstrap_5_horizontal_layout.html.twig']
     globals:
         site_name: '%app.site_name%'
         site_email_contact: '%app.site_email_contact%'

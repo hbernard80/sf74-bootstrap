@@ -20,10 +20,13 @@ doctrine:
                 alias: App
 
 when@test:
+    parameters:
+        env(TEST_TOKEN): ''
+
     doctrine:
         dbal:
             # "TEST_TOKEN" is typically set by ParaTest
-            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+            dbname_suffix: '_test%env(TEST_TOKEN)%'
 
 when@prod:
     doctrine:

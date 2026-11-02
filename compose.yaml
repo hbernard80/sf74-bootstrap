@@ -1,25 +1,75 @@
 
 services:
+  app:
+    build:
+      context: .
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.5.12}
+    environment:
+      APP_ENV: dev
+      APP_DEBUG: '1'
+      APP_SECRET: ${DOCKER_APP_SECRET:-local-docker-development-secret}
+      APP_SHARE_DIR: var/share
+      DEFAULT_URI: http://localhost:${APP_PORT:-8000}
+      DATABASE_URL: ${DOCKER_DATABASE_URL:-mysql://${MYSQL_USER:-app}:${MYSQL_PASSWORD:-!ChangeMe!}@database:3306/${MYSQL_DATABASE:-app}?serverVersion=${MYSQL_VERSION:-8.0.43}&charset=utf8mb4}
+      MESSENGER_TRANSPORT_DSN: doctrine://default?auto_setup=0
+      MAILER_DSN: smtp://mailer:1025
+      SITE_NAME: ${SITE_NAME:-Symfony Bootstrap}
+      SITE_OWNER: ${SITE_OWNER:-Hervé BERNARD}
+      SITE_EMAIL_CONTACT: ${SITE_EMAIL_CONTACT:-contact@example.test}
+      SITE_EMAIL_NOREPLY: ${SITE_EMAIL_NOREPLY:-noreply@example.test}
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'php', '-r', 'exit(@file_get_contents("http://127.0.0.1/") === false ? 1 : 0);']
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    volumes:
+      - .:/app
+      - app_vendor:/app/vendor
+      - app_var:/app/var
+      - app_assets_vendor:/app/assets/vendor
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.3-apache
+    environment:
+      PMA_HOST: database
+      PMA_PORT: '3306'
+    depends_on:
+      database:
+        condition: service_healthy
+
+  mailer:
+    image: axllent/mailpit
+
 ###> doctrine/doctrine-bundle ###
   database:
-    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    image: mysql:${MYSQL_VERSION:-8.0.43}
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-app}
       # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-!ChangeMe!}
+      MYSQL_USER: ${MYSQL_USER:-app}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-!ChangeRootMe!}
     healthcheck:
-      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
+      test: ['CMD-SHELL', 'MYSQL_PWD="$${MYSQL_PASSWORD}" mysql --protocol=TCP -h 127.0.0.1 -u "$${MYSQL_USER}" "$${MYSQL_DATABASE}" -e "SELECT 1"']
+      interval: 10s
       timeout: 5s
       retries: 5
       start_period: 60s
     volumes:
-      - database_data:/var/lib/postgresql/data:rw
+      - mysql_data:/var/lib/mysql:rw
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
+      # - ./docker/db/data:/var/lib/mysql:rw
 ###< doctrine/doctrine-bundle ###
 
 volumes:
+  app_vendor:
+  app_var:
+  app_assets_vendor:
 ###> doctrine/doctrine-bundle ###
-  database_data:
+  mysql_data:
 ###< doctrine/doctrine-bundle ###

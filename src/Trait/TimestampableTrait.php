@@ -4,6 +4,9 @@ namespace App\Trait;
 
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Les entités utilisant ce trait doivent porter #[ORM\HasLifecycleCallbacks].
+ */
 trait TimestampableTrait
 {
     #[ORM\Column]

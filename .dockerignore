@@ -1,0 +1,10 @@
+.git
+.env.local
+.env.local.php
+.env.*.local
+vendor
+var
+assets/vendor
+public/assets
+public/bundles
+.phpunit.cache

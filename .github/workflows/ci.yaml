@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Symfony checks and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      APP_ENV: test
+      APP_DEBUG: '1'
+      APP_SECRET: ci-test-secret
+      APP_SHARE_DIR: var/share
+      DEFAULT_URI: http://localhost
+      DATABASE_URL: 'sqlite:///:memory:'
+      MESSENGER_TRANSPORT_DSN: 'in-memory://'
+      MAILER_DSN: 'null://null'
+      SITE_NAME: Symfony Bootstrap
+      SITE_OWNER: Équipe du projet
+      SITE_EMAIL_CONTACT: contact@example.test
+      SITE_EMAIL_NOREPLY: noreply@example.test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version-file: .php-version
+          extensions: ctype, iconv, dom, filter, mbstring, pdo_sqlite, xml, xmlwriter, intl
+          tools: composer:v2
+          coverage: none
+
+      - name: Validate Composer configuration
+        run: composer validate --strict --no-check-publish
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Check PHP and extensions
+        run: composer check-platform-reqs
+
+      - name: Lint YAML
+        run: php bin/console lint:yaml config --parse-tags
+
+      - name: Lint Twig
+        run: php bin/console lint:twig templates
+
+      - name: Validate service container
+        run: php bin/console lint:container --resolve-env-vars
+
+      - name: Run tests
+        run: php bin/phpunit
